@@ -1,9 +1,12 @@
 package com.song.tddproject.tddproject.service.impl;
 
+import com.song.tddproject.tddproject.config.exception.RestApiException;
+import com.song.tddproject.tddproject.config.exception.UserErrorCode;
 import com.song.tddproject.tddproject.entity.User;
 import com.song.tddproject.tddproject.repository.UserRepository;
 import com.song.tddproject.tddproject.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -14,6 +17,13 @@ import java.util.regex.Pattern;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
+
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    public UserServiceImpl(BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
 
     @Override
     public User getUser(Long id){
@@ -27,18 +37,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Long addUser(User user) {
-        return userRepository.save(user).getId();
+    public User addUser(User user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
     }
 
     @Override
-    public boolean validateUsername(String username) {
-        return userRepository.findUserByUsername(username).isEmpty();
+    public void validateUsername(String username) {
+        if (!userRepository.findUserByUsername(username).isEmpty()){
+            throw new RestApiException(UserErrorCode.INACTIVE_USER);
+        }
+
     }
 
     @Override
-    public boolean validatePhone(String phone) {
-        return Pattern.matches("^\\d{2,3}-\\d{3,4}-\\d{4}$", phone);
+    public void validatePhone(String phone) {
+        if( !Pattern.matches("^\\d{2,3}-\\d{3,4}-\\d{4}$", phone)) {
+            throw new RestApiException(UserErrorCode.INACTIVE_USER);
+        }
+
     }
 
     @Override

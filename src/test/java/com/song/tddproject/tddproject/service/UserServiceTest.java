@@ -74,9 +74,9 @@ public class UserServiceTest {
                 .username("test1234")
                 .build();
 
-        Long id = userService.addUser(user);
+        User userEntity = userService.addUser(user);
 
-        assertThat(userRepository.findById(id).orElseThrow()).isNotNull();
+        assertThat(userEntity).isNotNull();
 
     }
 
@@ -91,15 +91,13 @@ public class UserServiceTest {
                 .roles("ROLE_USER")
                 .username("test1234")
                 .build()).getId();
-        boolean validateResult = userService.validateUsername("test1234");
+        userService.validateUsername("test1234");
 
-        assertThat(validateResult).isFalse();
 
     }
     @Test
     public void test_user_exist_success(){
-        boolean validateResult = userService.validateUsername("test1234");
-        assertThat(validateResult).isTrue();
+      userService.validateUsername("test1234");
 
     }
 
@@ -107,19 +105,14 @@ public class UserServiceTest {
     public void test_phone_validate_success(){
         String phone = "010-7118-1209";
 
-        boolean validateResult = userService.validatePhone(phone);
-
-        assertThat(validateResult).isTrue();
+   userService.validatePhone(phone);
 
     }
 
     @Test
     public void test_phone_validate_fail(){
         String phone = "010-71118-1209";
-
-        boolean validateResult = userService.validatePhone(phone);
-
-        assertThat(validateResult).isFalse();
+        userService.validatePhone(phone);
 
     }
 

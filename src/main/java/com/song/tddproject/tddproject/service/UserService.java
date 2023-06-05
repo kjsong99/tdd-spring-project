@@ -7,9 +7,9 @@ import java.util.List;
 public interface UserService {
     public User getUser(Long id);
     public List<User> getAllUsers();
-    public Long addUser(User user);
-    public boolean validateUsername(String username);
-    public boolean validatePhone(String phone);
+    public User addUser(User user);
+    public void validateUsername(String username);
+    public void validatePhone(String phone);
     public void deleteUser(User user);
     public User updateName(User user, String newName);
     public User updateAddress(User user, String newAddress);
